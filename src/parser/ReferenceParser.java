@@ -22,7 +22,7 @@ public class ReferenceParser {
     List<Features> featureList;
     List<Word> depGraph;
 
-    ReferenceParser(List<Word> wordList) {
+    public ReferenceParser(List<Word> wordList) {
         stack = new Stack<Word>();
         queue = new ArrayList<Word>(wordList);
         this.wordList = wordList;
@@ -195,7 +195,7 @@ public class ReferenceParser {
 
         while (!queue.isEmpty()) {
             featureList.add(extractFeatures());
-            // COMPLETE HERE THE CODE TO DETERMINE THE ACTION 
+            // TODO: COMPLETE HERE THE CODE TO DETERMINE THE ACTION
         }
         emptyStack(transitionList, featureList);
 

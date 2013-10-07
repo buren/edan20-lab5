@@ -20,7 +20,7 @@ public abstract class Guide {
 
     public abstract String predict();
 
-    Features extractFeatures() {
+    public Features extractFeatures() {
         Features feats;
         String topPostagStack = "nil";
         String secondPostagStack = "nil";

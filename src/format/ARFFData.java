@@ -14,7 +14,7 @@ public class ARFFData {
 
     public void saveFeatures(File file, List<Features> featureList, List<String> actionList) throws IOException {
         if (featureList.size() != actionList.size()) {
-            System.out.println("Probable mistake. Feature and action lists have different size!");
+            System.out.println("Probable mistake: Feature and action lists have different size!");
         }
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 

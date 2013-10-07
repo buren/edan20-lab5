@@ -30,7 +30,7 @@ public class Parser {
         while (!parserState.queue.isEmpty()) {
             transition = oracle.predict();
             // Executes the predicted transition. If not possible, then shift
-            // COMPLETE THE CODE HERE
+            //TODO: COMPLETE THE CODE HERE
         }
 
         // We empty the stack. When words have no head, we set it to root

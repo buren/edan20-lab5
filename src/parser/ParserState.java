@@ -15,7 +15,7 @@ public class ParserState {
     List<String> transitionList;
     List<Word> depGraph;
 
-    ParserState(List<Word> wordList) {
+    public ParserState(List<Word> wordList) {
         this.stack = new Stack<Word>();
         this.queue = new ArrayList<Word>(wordList);
         this.wordList = new ArrayList<Word>(wordList);
