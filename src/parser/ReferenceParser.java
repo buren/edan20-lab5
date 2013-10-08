@@ -142,8 +142,19 @@ public class ReferenceParser {
         String secondPostagStack = "nil";
         String firstPostagQueue = "nil";
         String secondPostagQueue = "nil";
-        // COMPLETE HERE THE CODE TO EXTRACT FEATURES
 
+        if (queue.size() > 0) {
+            firstPostagQueue = queue.get(0).getPostag();
+            if (queue.size() > 1) {
+                secondPostagQueue = queue.get(1).getPostag();
+            }
+        }
+        if (stack.size() > 0) {
+            topPostagStack = stack.get(0).getPostag();
+            if (stack.size() > 1) {
+                secondPostagQueue = stack.get(1).getPostag();
+            }
+        }
         feats = new Features(topPostagStack, secondPostagStack, firstPostagQueue, secondPostagQueue, canLeftArc(), canReduce());
         return feats;
     }
@@ -195,7 +206,7 @@ public class ReferenceParser {
 
         while (!queue.isEmpty()) {
             featureList.add(extractFeatures());
-            // TODO: COMPLETE HERE THE CODE TO DETERMINE THE ACTION
+            transitionList.add(performAction());
         }
         emptyStack(transitionList, featureList);
 
@@ -215,6 +226,24 @@ public class ReferenceParser {
             // Could not find the correct sequence!!!: 
             // The graphs are not equal.
             return -1;
+        }
+    }
+
+    private String performAction() {
+        // Check is action possible: [oracleLeftArc, oracleRightArc, oracleReduce]
+        // Possible actions:         [doLeftArc, doRightArc, doReduce, doShift)
+        if (oracleLeftArc()) {
+            doLeftArc();
+            return "la";
+        } else if (oracleRightArc()) {
+            doRightArc();
+            return "ra";
+        } else if (oracleReduce()) {
+            doReduce();
+            return "re";
+        } else{
+            doShift();
+            return "sh";
         }
     }
 
@@ -273,6 +302,10 @@ public class ReferenceParser {
             // indicating if the parse is successful or not
             // Failed parses should be discarded.
             parseSuccess = refParser.parse();
+            if (parseSuccess < 0) {
+                System.err.print("FUCKED SENTENCE!");
+            }
+
             refParser.printActions();
             if (parseSuccess != -1) {
                 featureList.addAll(refParser.getFeatureList());
@@ -280,5 +313,6 @@ public class ReferenceParser {
             }
         }
         arffData.saveFeatures(arff, featureList, transitionList);
+        System.exit(0);
     }
 }

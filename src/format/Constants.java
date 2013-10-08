@@ -6,7 +6,7 @@ package format;
  */
 public class Constants {
 
-    public final static String NIVRE_HOME = "/Users/buren/school/edan20_language_technology/lab5/corpus";
+    public final static String NIVRE_HOME = "/Users/buren/school/edan20_language_technology/lab5/corpus/";
     //public final static String NIVRE_HOME = "";
     public final static String TRAINING_SET = NIVRE_HOME + "swedish_talbanken05_train.conll";
     public final static String TEST_SET = NIVRE_HOME + "swedish_talbanken05_test_blind.conll";
