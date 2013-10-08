@@ -1,7 +1,6 @@
 package guide;
 
 /**
- *
  * @author Pierre Nugues
  */
 // This class stores the features of the parser state
@@ -9,8 +8,10 @@ public class Features {
 
     String topPostagStack;
     String secondPostagStack;
+    String thirdPostagStack;
     String firstPostagQueue;
     String secondPostagQueue;
+    String thirdPostagQueue;
     boolean canLA;
     boolean canRE;
 
@@ -35,6 +36,17 @@ public class Features {
         this.canRE = canRE;
     }
 
+    public Features(String topPostagStack, String secondPostagStack, String thirdPostagStack, String firstPostagQueue, String secondPostagQueue, String thirdPostagQueue, boolean canLA, boolean canRE) {
+        this.topPostagStack = topPostagStack;
+        this.secondPostagStack = secondPostagStack;
+        this.thirdPostagStack = thirdPostagStack;
+        this.firstPostagQueue = firstPostagQueue;
+        this.secondPostagQueue = secondPostagQueue;
+        this.thirdPostagQueue = thirdPostagQueue;
+        this.canLA = canLA;
+        this.canRE = canRE;
+    }
+
     public String getTopPostagStack() {
         return topPostagStack;
     }
@@ -55,8 +67,24 @@ public class Features {
         return secondPostagQueue;
     }
 
+    public String getThirdPostagStack() {
+        return thirdPostagStack;
+    }
+
+    public String getThirdPostagQueue() {
+        return thirdPostagQueue;
+    }
+
     public void setFirstPostagQueue(String firstPostagQueue) {
         this.firstPostagQueue = firstPostagQueue;
+    }
+
+    public void setThirdPostagStack(String thirdPostagStack) {
+        this.thirdPostagStack = thirdPostagStack;
+    }
+
+    public void setThirdPostagQueue(String thirdPostagQueue) {
+        this.thirdPostagQueue = thirdPostagQueue;
     }
 
     public boolean getCanLA() {

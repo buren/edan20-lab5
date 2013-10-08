@@ -12,7 +12,7 @@ import guide.Features;
 // The data will be use to train the classifier
 public class ARFFData {
 
-    public void saveFeatures(File file, List<Features> featureList, List<String> actionList) throws IOException {
+    public void saveFeatures(File file, List<Features> featureList, List<String> actionList, int columns) throws IOException {
         if (featureList.size() != actionList.size()) {
             System.out.println("Probable mistake: Feature and action lists have different size!");
         }
@@ -20,9 +20,17 @@ public class ARFFData {
 
         for (int i = 0; i < featureList.size(); i++) {
             writer.write((featureList.get(i)).getTopPostagStack() + "\t");
-            writer.write((featureList.get(i)).getSecondPostagStack() + "\t");
+            if (columns > 3)
+                writer.write((featureList.get(i)).getSecondPostagStack() + "\t");
+            if (columns > 5)
+                writer.write((featureList.get(i)).getThirdPostagStack() + "\t");
+
             writer.write((featureList.get(i)).getFirstPostagQueue() + "\t");
-            writer.write((featureList.get(i)).getSecondPostagQueue() + "\t");
+            if (columns > 3)
+                writer.write((featureList.get(i)).getSecondPostagQueue() + "\t");
+            if (columns > 5)
+                writer.write((featureList.get(i)).getThirdPostagQueue() + "\t");
+
             writer.write((featureList.get(i)).getCanLA() + "\t");
             writer.write((featureList.get(i)).getCanRE() + "\t");
             writer.write(actionList.get(i) + "\n");

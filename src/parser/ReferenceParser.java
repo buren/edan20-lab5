@@ -140,22 +140,39 @@ public class ReferenceParser {
         Features feats;
         String topPostagStack = "nil";
         String secondPostagStack = "nil";
+        String thirdPostagStack = "nil";
         String firstPostagQueue = "nil";
         String secondPostagQueue = "nil";
+        String thirdPostagQueue = "nil";
 
         if (queue.size() > 0) {
             firstPostagQueue = queue.get(0).getPostag();
             if (queue.size() > 1) {
                 secondPostagQueue = queue.get(1).getPostag();
             }
-        }
-        if (stack.size() > 0) {
-            topPostagStack = stack.get(0).getPostag();
-            if (stack.size() > 1) {
-                secondPostagQueue = stack.get(1).getPostag();
+            if (queue.size() > 2) {
+                thirdPostagQueue = queue.get(2).getPostag();
             }
         }
-        feats = new Features(topPostagStack, secondPostagStack, firstPostagQueue, secondPostagQueue, canLeftArc(), canReduce());
+        if (stack.size() > 0) {
+            topPostagStack = stack.get(stack.size()-1).getPostag();
+            if (stack.size() > 1) {
+                secondPostagStack = stack.get(stack.size()-2).getPostag();
+            }
+            if (stack.size() > 2) {
+                thirdPostagStack = stack.get(stack.size()-3).getPostag();
+            }
+        }
+        feats = new Features(
+                topPostagStack,
+                secondPostagStack,
+                thirdPostagStack,
+                firstPostagQueue,
+                secondPostagQueue,
+                thirdPostagQueue,
+                canLeftArc(),
+                canReduce()
+        );
         return feats;
     }
 
@@ -230,8 +247,6 @@ public class ReferenceParser {
     }
 
     private String performAction() {
-        // Check is action possible: [oracleLeftArc, oracleRightArc, oracleReduce]
-        // Possible actions:         [doLeftArc, doRightArc, doReduce, doShift)
         if (oracleLeftArc()) {
             doLeftArc();
             return "la";
@@ -274,7 +289,9 @@ public class ReferenceParser {
 
     public static void main(String[] args) throws IOException {
         File trainingSet = new File(Constants.TRAINING_SET);
-        File arff = new File(Constants.ARFF_FILE);
+        File arff4 = new File(Constants.ARFF_FILE);
+        File arff2 = new File(Constants.ARFF_FILE_2COL);
+        File arff6 = new File(Constants.ARFF_FILE_6COL);
         CONLLCorpus trainingCorpus = new CONLLCorpus();
         ARFFData arffData = new ARFFData();
 
@@ -302,17 +319,19 @@ public class ReferenceParser {
             // indicating if the parse is successful or not
             // Failed parses should be discarded.
             parseSuccess = refParser.parse();
-            if (parseSuccess < 0) {
-                System.err.print("FUCKED SENTENCE!");
-            }
-
-            refParser.printActions();
+//            if (parseSuccess < 0) {
+//                System.err.println("Sentence parsing failed!\nParsed " + i + " of the total " + sentenceList.size() + " sentences");
+//            }
+//            refParser.printActions();
             if (parseSuccess != -1) {
                 featureList.addAll(refParser.getFeatureList());
                 transitionList.addAll(refParser.getActionList());
             }
         }
-        arffData.saveFeatures(arff, featureList, transitionList);
+        arffData.saveFeatures(arff2, featureList, transitionList, 2);
+        arffData.saveFeatures(arff4, featureList, transitionList, 4);
+        arffData.saveFeatures(arff6, featureList, transitionList, 6);
+        System.out.println("Successfully parsed and wrote all " + sentenceList.size() + " sentences");
         System.exit(0);
     }
 }
