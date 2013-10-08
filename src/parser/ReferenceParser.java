@@ -163,6 +163,7 @@ public class ReferenceParser {
                 thirdPostagStack = stack.get(stack.size()-3).getPostag();
             }
         }
+
         feats = new Features(
                 topPostagStack,
                 secondPostagStack,
@@ -223,7 +224,8 @@ public class ReferenceParser {
 
         while (!queue.isEmpty()) {
             featureList.add(extractFeatures());
-            transitionList.add(performAction());
+            String action = performAction();
+            transitionList.add(action);
         }
         emptyStack(transitionList, featureList);
 
@@ -248,11 +250,13 @@ public class ReferenceParser {
 
     private String performAction() {
         if (oracleLeftArc()) {
+            String res= stack.peek().getDeprel();
             doLeftArc();
-            return "la";
+            return "la." + res;
         } else if (oracleRightArc()) {
+            String res=  stack.peek().getDeprel();
             doRightArc();
-            return "ra";
+            return "ra." + stack.peek().getDeprel();
         } else if (oracleReduce()) {
             doReduce();
             return "re";
