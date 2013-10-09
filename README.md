@@ -1,5 +1,8 @@
 #Lunds Tekniska Högskola (LTH) - Course: EDAN20 - Lab5/6
 
+####High memory usage
+The program requires quite a lot of memory. So if a "out of heap space" exception occurs increase the memory the program can use. (From command line or in your IDE.)
+
 ##Prerequisites:
 
 ###Paths
@@ -31,3 +34,19 @@
 ### Course lab5/6 links
 http://cs.lth.se/english/course/edan20-language-technology/coursework/assignment-5-dependency-parsing/
 http://cs.lth.se/english/course/edan20-language-technology/coursework/assignment-6-dependency-parsing-using-machine-learning-techniques/
+
+
+## Test Result
+perl eval.pl -g corpus/swedish_talbanken05_test.conll -s corpus/result_output.conll -q
+
+
+## Results
+4 arguments
+  Labeled   attachment score: 3412 / 5021 * 100 = 67.95 %
+  Unlabeled attachment score: 4029 / 5021 * 100 = 80.24 %
+  Label accuracy score:       3547 / 5021 * 100 = 70.64 %
+
+6 arguments
+  Labeled   attachment score: 3548 / 5021 * 100 = 70.66 %
+  Unlabeled attachment score: 4147 / 5021 * 100 = 82.59 %
+  Label accuracy score:       3677 / 5021 * 100 = 73.23 %

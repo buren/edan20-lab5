@@ -25,21 +25,48 @@ public abstract class Guide {
         String topPostagStack = "nil";
         String secondPostagStack = "nil";
         String secondPostagQueue = "nil";
+        String topStackNextWordPostag = "nil";
+        String thirdPostagQueue= "nil";
+
         if (!parserState.stack.empty()) {
             topPostagStack = parserState.stack.peek().getPostag();
+
             Word temp = parserState.stack.pop();
             if (!parserState.stack.empty()) {
                 secondPostagStack = parserState.stack.peek().getPostag();
             }
             parserState.stack.push(temp);
+            topStackNextWordPostag = this.findNextWordPosTagAfterStackTop(parserState.stack.peek());
         }
         if (parserState.queue.size() > 1) {
             secondPostagQueue = parserState.queue.get(1).getPostag();
         }
 
-        //feats = new Features(topPostagStack, queue.get(0).getPostag());
-        //feats = new Features(topPostagStack, queue.get(0).getPostag(), canLeftArc(), canReduce());
-        feats = new Features(topPostagStack, secondPostagStack, parserState.queue.get(0).getPostag(), secondPostagQueue, parserState.canLeftArc(), parserState.canReduce());
-        return feats;
+        if (parserState.queue.size() > 2)
+            thirdPostagQueue = parserState.queue.get(2).getPostag();
+
+        return new Features(
+                topPostagStack,
+                secondPostagStack,
+                topStackNextWordPostag,
+                parserState.queue.get(0).getPostag(),
+                secondPostagQueue,
+                thirdPostagQueue,
+                parserState.canLeftArc(),
+                parserState.canReduce()
+        );
+    }
+
+    private String findNextWordPosTagAfterStackTop(Word topStackWord){
+        for (int i = 0; i < parserState.getWordList().size(); i++){
+            if (topStackWord.equals(parserState.getWordList().get(i))) {
+                if (i == parserState.getWordList().size()-1){
+                    return "nil";
+                }else {
+                    return parserState.getWordList().get(i+1).getPostag();
+                }
+            }
+        }
+        return "nil";
     }
 }

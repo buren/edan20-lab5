@@ -105,6 +105,21 @@ public class ReferenceParser {
         );
     }
 
+
+    private String findTopStackNextWords(Word topStackWord){
+        for (int i = 0; i < wordList.size(); i++){
+            if (topStackWord.equals(wordList.get(i))) {
+                if (i == wordList.size()-1){
+                    return "nil";
+                }else {
+                    return wordList.get(i+1).getPostag();
+                }
+            }
+        }
+        return "nil";
+    }
+
+
     // emptyStack should only leave the root in the stack if the graph is projective and well-formed
     public int emptyStack(List<String> transitionList, List<Features> featureList) {
         while (stack.size() > 1) {
@@ -120,18 +135,6 @@ public class ReferenceParser {
     }
 
 
-    private String findTopStackNextWords(Word topStackWord){
-        for (int i = 0; i < wordList.size(); i++){
-            if (topStackWord.equals(wordList.get(i))) {
-                if (i == wordList.size()-1){
-                    return "nil";
-                }else {
-                    return wordList.get(i+1).getPostag();
-                }
-            }
-        }
-        return "_";
-    }
 
 
     /*

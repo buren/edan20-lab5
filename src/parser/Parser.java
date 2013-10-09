@@ -5,8 +5,7 @@ import java.io.File;
 import format.CONLLCorpus;
 import format.Constants;
 import format.Word;
-import guide.Guide;
-import guide.Guide4;
+import guide.*;
 import java.io.IOException;
 
 import sun.misc.Regexp;
@@ -102,24 +101,32 @@ public class Parser {
             }
             System.out.println();
         }
-
         parserState.wordList.remove(0);
         return parserState.wordList;
     }
 
     public static void main(String[] args) throws IOException {
         File testSet = new File(Constants.TEST_SET);
-        File testSetParsed = new File(Constants.TEST_SET_PARSED);
         CONLLCorpus testCorpus = new CONLLCorpus();
+//        WekaGlue wekaModel2 = new WekaGlue();
         WekaGlue wekaModel = new WekaGlue();
+        WekaGlue wekaModel6 = new WekaGlue();
+
 
         List<List<Word>> sentenceList;
+//        List<List<Word>> parsedList2 = new ArrayList<List<Word>>();
         List<List<Word>> parsedList = new ArrayList<List<Word>>();
+        List<List<Word>> parsedList6 = new ArrayList<List<Word>>();
 
+//        Parser parser2;
         Parser parser;
+        Parser parser6;
+//        ParserState parserState2;
         ParserState parserState;
+        ParserState parserState6;
+        Guide oracle2;
         Guide oracle;
-        List<Word> graph;
+        Guide oracle6;
 
         if (testSet.exists()) {
             System.out.println("Loading file...");
@@ -128,17 +135,31 @@ public class Parser {
             return;
         }
         sentenceList = testCorpus.loadFile(testSet);
+
+
+//        wekaModel2.create(Constants.ARFF_MODEL_2COL, Constants.ARFF_FILE_2COL);
         wekaModel.create(Constants.ARFF_MODEL, Constants.ARFF_FILE);
+        wekaModel6.create(Constants.ARFF_MODEL_6COL, Constants.ARFF_FILE_6COL);
 
         System.out.println("Parsing the sentences...");
         for (int i = 0; i < sentenceList.size(); i++) {
+//            parserState2 = new ParserState(sentenceList.get(i));
             parserState = new ParserState(sentenceList.get(i));
+            parserState6 = new ParserState(sentenceList.get(i));
+//            oracle2 = new Guide2(wekaModel2, parserState2);
             oracle = new Guide4(wekaModel, parserState);
+            oracle6 = new Guide6(wekaModel6, parserState6);
+//            parser2 = new Parser(parserState2, oracle2);
             parser = new Parser(parserState, oracle);
-            graph = parser.parse();
-            parsedList.add(graph);
+            parser6 = new Parser(parserState6, oracle6);
+//            parsedList2.add(parser2.parse());
+            parsedList.add(parser.parse());
+            parsedList6.add(parser6.parse());
         }
-        testCorpus.saveFile(testSetParsed, parsedList);
+
+//        testCorpus.saveFile(new File(Constants.TEST_SET_PARSED_2COL), parsedList2);
+        testCorpus.saveFile(new File(Constants.TEST_SET_PARSED), parsedList);
+        testCorpus.saveFile(new File(Constants.TEST_SET_PARSED_6COL), parsedList6);
         System.exit(0);
     }
 }

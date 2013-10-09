@@ -89,4 +89,8 @@ public class ParserState {
         stack.peek().setDeprel("ROOT");
         depGraph.add(stack.pop());
     }
+
+    public List<Word> getWordList() {
+        return wordList;
+    }
 }
