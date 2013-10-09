@@ -8,7 +8,7 @@ public class Features {
 
     String topPostagStack;
     String secondPostagStack;
-    String thirdPostagStack;
+    String topStackNextWord;
     String firstPostagQueue;
     String secondPostagQueue;
     String thirdPostagQueue;
@@ -39,7 +39,7 @@ public class Features {
     public Features(String topPostagStack, String secondPostagStack, String thirdPostagStack, String firstPostagQueue, String secondPostagQueue, String thirdPostagQueue, boolean canLA, boolean canRE) {
         this.topPostagStack = topPostagStack;
         this.secondPostagStack = secondPostagStack;
-        this.thirdPostagStack = thirdPostagStack;
+        this.topStackNextWord = thirdPostagStack;
         this.firstPostagQueue = firstPostagQueue;
         this.secondPostagQueue = secondPostagQueue;
         this.thirdPostagQueue = thirdPostagQueue;
@@ -67,8 +67,8 @@ public class Features {
         return secondPostagQueue;
     }
 
-    public String getThirdPostagStack() {
-        return thirdPostagStack;
+    public String getTopStackNextWord() {
+        return topStackNextWord;
     }
 
     public String getThirdPostagQueue() {
@@ -79,8 +79,8 @@ public class Features {
         this.firstPostagQueue = firstPostagQueue;
     }
 
-    public void setThirdPostagStack(String thirdPostagStack) {
-        this.thirdPostagStack = thirdPostagStack;
+    public void setTopStackNextWord(String topStackNextWord) {
+        this.topStackNextWord = topStackNextWord;
     }
 
     public void setThirdPostagQueue(String thirdPostagQueue) {

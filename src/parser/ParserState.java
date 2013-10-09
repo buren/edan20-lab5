@@ -60,16 +60,6 @@ public class ParserState {
         return canLeftArc;
     }
 
-    public boolean oracleRightArc() {
-        boolean oracleRightArc = false;
-        if (!stack.empty()) {
-            if (stack.peek().getId() == queue.get(0).getHead()) {
-                //System.out.println(stack.peek().getForm() + "  --> " + queue.get(0).getForm());
-                oracleRightArc = true;
-            }
-        }
-        return oracleRightArc;
-    }
 
     public boolean canReduce() {
         boolean canReduce = false;

@@ -19,7 +19,7 @@ public class Guide6 extends Guide {
         String[] features = new String[8];
         features[0] = feats.getTopPostagStack();
         features[1] = feats.getSecondPostagStack();
-        features[2] = feats.getThirdPostagStack();
+        features[2] = feats.getTopStackNextWord();
         features[3] = feats.getFirstPostagQueue();
         features[4] = feats.getSecondPostagQueue();
         features[5] = feats.getThirdPostagQueue();

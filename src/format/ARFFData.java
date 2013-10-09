@@ -23,7 +23,7 @@ public class ARFFData {
             if (columns > 3)
                 writer.write((featureList.get(i)).getSecondPostagStack() + "\t");
             if (columns > 5)
-                writer.write((featureList.get(i)).getThirdPostagStack() + "\t");
+                writer.write((featureList.get(i)).getTopStackNextWord() + "\t");
 
             writer.write((featureList.get(i)).getFirstPostagQueue() + "\t");
             if (columns > 3)

@@ -8,6 +8,8 @@ import format.Word;
 import guide.Guide;
 import guide.Guide4;
 import java.io.IOException;
+
+import sun.misc.Regexp;
 import wekaglue.WekaGlue;
 
 /**
@@ -28,15 +30,19 @@ public class Parser {
         String transition;
 
         while (!parserState.queue.isEmpty()) {
-            String performedTransition = null;
+            String performedTransition = "sh";
             transition = oracle.predict();
             // Executes the predicted transition. If not possible, then shift
+            String[] splitted = transition.replace(".", ",").split(",");
+            String func = "_";
+            if (splitted.length > 1)
+                func = splitted[1];
+
             if (transition.contains("la")) {
                 if (parserState.canLeftArc()){
                     performedTransition = transition;
-                    parserState.doLeftArc(parserState.queue.get(0).getDeprel());
+                    parserState.doLeftArc(func);
                 }else {
-                    performedTransition = "sh";
                     parserState.doShift();
                 }
             }else if (transition.contains("re")) {
@@ -44,24 +50,16 @@ public class Parser {
                     performedTransition = transition;
                     parserState.doReduce();
                 }else {
-                    performedTransition = "sh";
                     parserState.doShift();
                 }
             }else if (transition.contains("ra")) {
-                if (parserState.oracleRightArc()){
                     performedTransition = transition;
-                    parserState.doRightArc(parserState.queue.get(0).getDeprel());
-                }else {
-                    performedTransition = "sh";
-                    parserState.doShift();
-                }
+                    parserState.doRightArc(func);
             } else {
-                performedTransition = "sh";
                 parserState.doShift();
             }
             parserState.addTransition(performedTransition);
         }
-
 
         // We empty the stack. When words have no head, we set it to root
         while (parserState.stack.size() > 1) {

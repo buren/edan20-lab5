@@ -51,12 +51,17 @@ public class ReferenceParser {
 
     private String performAction() {
         if (oracleLeftArc()) {
-            String function = stack.peek().getDeprel();
+            String function = "." + stack.peek().getDeprel();
             doLeftArc();
-            return "la." + function;
+            if (function.equals("."))
+                function = "";
+            return "la" + function;
         } else if (oracleRightArc()) {
             doRightArc();
-            return "ra." + stack.peek().getDeprel();
+            String function = "." + stack.peek().getDeprel();
+            if (function.equals("."))
+                function = "";
+            return "ra" + function;
         } else if (oracleReduce()) {
             doReduce();
             return "re";
@@ -69,7 +74,7 @@ public class ReferenceParser {
     private Features extractFeatures() {
         String topPostagStack = "nil";
         String secondPostagStack = "nil";
-        String thirdPostagStack = "nil";
+        String topStackNextWordPostag = "nil";
         String firstPostagQueue = "nil";
         String secondPostagQueue = "nil";
         String thirdPostagQueue = "nil";
@@ -83,16 +88,15 @@ public class ReferenceParser {
         }
         if (stack.size() > 0) {
             topPostagStack = stack.get(stack.size()-1).getPostag();
+            topStackNextWordPostag = this.findTopStackNextWords(stack.get(stack.size()-1));
             if (stack.size() > 1)
                 secondPostagStack = stack.get(stack.size()-2).getPostag();
-            if (stack.size() > 2)
-                thirdPostagStack = stack.get(stack.size()-3).getPostag();
         }
 
         return new Features(
                 topPostagStack,
                 secondPostagStack,
-                thirdPostagStack,
+                topStackNextWordPostag,
                 firstPostagQueue,
                 secondPostagQueue,
                 thirdPostagQueue,
@@ -113,6 +117,20 @@ public class ReferenceParser {
             }
         }
         return 0;
+    }
+
+
+    private String findTopStackNextWords(Word topStackWord){
+        for (int i = 0; i < wordList.size(); i++){
+            if (topStackWord.equals(wordList.get(i))) {
+                if (i == wordList.size()-1){
+                    return "nil";
+                }else {
+                    return wordList.get(i+1).getPostag();
+                }
+            }
+        }
+        return "_";
     }
 
 
