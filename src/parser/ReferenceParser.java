@@ -29,6 +29,151 @@ public class ReferenceParser {
         depGraph = new ArrayList<Word>();
     }
 
+
+    public int parse() {
+        transitionList = new ArrayList<String>();
+        featureList = new ArrayList<Features>();
+
+        while (!queue.isEmpty()) {
+            featureList.add(extractFeatures());
+            String action = performAction();
+            transitionList.add(action);
+        }
+        emptyStack(transitionList, featureList);
+        // Final test to check if the hand-annotated graph and reference-parsed
+        // graph are equal.
+        // If they are different, this is probably due to nonprojective links
+        if (equalGraphs() == true)
+            return 0; // Correct action sequence: Hand-annotated graph and reference-parsed graph are equal.
+        else
+            return -1; // Could not find the correct sequence!!!: The graphs are not equal.
+    }
+
+    private String performAction() {
+        if (oracleLeftArc()) {
+            String function = stack.peek().getDeprel();
+            doLeftArc();
+            return "la." + function;
+        } else if (oracleRightArc()) {
+            doRightArc();
+            return "ra." + stack.peek().getDeprel();
+        } else if (oracleReduce()) {
+            doReduce();
+            return "re";
+        } else{
+            doShift();
+            return "sh";
+        }
+    }
+
+    private Features extractFeatures() {
+        String topPostagStack = "nil";
+        String secondPostagStack = "nil";
+        String thirdPostagStack = "nil";
+        String firstPostagQueue = "nil";
+        String secondPostagQueue = "nil";
+        String thirdPostagQueue = "nil";
+
+        if (queue.size() > 0) {
+            firstPostagQueue = queue.get(0).getPostag();
+            if (queue.size() > 1)
+                secondPostagQueue = queue.get(1).getPostag();
+            if (queue.size() > 2)
+                thirdPostagQueue = queue.get(2).getPostag();
+        }
+        if (stack.size() > 0) {
+            topPostagStack = stack.get(stack.size()-1).getPostag();
+            if (stack.size() > 1)
+                secondPostagStack = stack.get(stack.size()-2).getPostag();
+            if (stack.size() > 2)
+                thirdPostagStack = stack.get(stack.size()-3).getPostag();
+        }
+
+        return new Features(
+                topPostagStack,
+                secondPostagStack,
+                thirdPostagStack,
+                firstPostagQueue,
+                secondPostagQueue,
+                thirdPostagQueue,
+                canLeftArc(),
+                canReduce()
+        );
+    }
+
+    // emptyStack should only leave the root in the stack if the graph is projective and well-formed
+    public int emptyStack(List<String> transitionList, List<Features> featureList) {
+        while (stack.size() > 1) {
+            featureList.add(extractFeatures());
+            if (canReduce()) {
+                doReduce();
+                transitionList.add("re");
+            } else {
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+
+    /*
+     * Get methods
+     */
+
+    public List<String> getActionList() { return transitionList; }
+
+    public List<Features> getFeatureList() { return featureList; }
+
+    public List<Word> getQueue() { return queue; }
+
+    public Stack<Word> getStack() { return stack; }
+
+
+    /*
+     * Print
+     */
+
+    public void printActions() {
+        for (int i = 0; i < wordList.size(); i++) {
+            System.out.print(wordList.get(i).getForm() + " ");
+        }
+        System.out.println();
+        for (int i = 0; i < transitionList.size(); i++) {
+            System.out.print(transitionList.get(i) + " ");
+        }
+        System.out.println();
+    }
+
+
+    /*
+     * Private methods
+     */
+
+    // A sanity check about the action sequence.
+    private boolean equalGraphs() {
+        boolean equals = false;
+        List<Word> temp = new ArrayList<Word>(wordList);
+
+        wordList.remove(0); // we remove the root word
+
+        for (int i = 0; i < wordList.size(); i++) {
+            equals = false;
+            for (int j = 0; j < depGraph.size(); j++) {
+                if (wordList.get(i).getId() == depGraph.get(j).getId()) {
+                    if (wordList.get(i).getHead() == depGraph.get(j).getHead()) {
+                        equals = true;
+                    }
+                    break;
+                }
+            }
+            if (equals == false) {
+                break;
+            }
+        }
+        wordList = temp;
+        return equals;
+    }
+
     private void doLeftArc() {
         depGraph.add(stack.pop());
     }
@@ -126,7 +271,7 @@ public class ReferenceParser {
         // Constraint: top of the stack has a head somewhere is the graph
         // This guarantees that the graph is connected
         // Here this means that it is already in the graph
-        // In reference parsing, this should always be satisfied for projective graphs    
+        // In reference parsing, this should always be satisfied for projective graphs
         for (int i = 0; i < depGraph.size(); i++) {
             if (depGraph.get(i).getId() == stack.peek().getId()) {
                 canReduce = true;
@@ -136,160 +281,6 @@ public class ReferenceParser {
         return canReduce;
     }
 
-    private Features extractFeatures() {
-        Features feats;
-        String topPostagStack = "nil";
-        String secondPostagStack = "nil";
-        String thirdPostagStack = "nil";
-        String firstPostagQueue = "nil";
-        String secondPostagQueue = "nil";
-        String thirdPostagQueue = "nil";
-
-        if (queue.size() > 0) {
-            firstPostagQueue = queue.get(0).getPostag();
-            if (queue.size() > 1) {
-                secondPostagQueue = queue.get(1).getPostag();
-            }
-            if (queue.size() > 2) {
-                thirdPostagQueue = queue.get(2).getPostag();
-            }
-        }
-        if (stack.size() > 0) {
-            topPostagStack = stack.get(stack.size()-1).getPostag();
-            if (stack.size() > 1) {
-                secondPostagStack = stack.get(stack.size()-2).getPostag();
-            }
-            if (stack.size() > 2) {
-                thirdPostagStack = stack.get(stack.size()-3).getPostag();
-            }
-        }
-
-        feats = new Features(
-                topPostagStack,
-                secondPostagStack,
-                thirdPostagStack,
-                firstPostagQueue,
-                secondPostagQueue,
-                thirdPostagQueue,
-                canLeftArc(),
-                canReduce()
-        );
-        return feats;
-    }
-
-    // A sanity check about the action sequence.
-    private boolean equalGraphs() {
-        boolean equals = false;
-        List<Word> temp = new ArrayList<Word>(wordList);
-
-        wordList.remove(0); // we remove the root word
-
-        for (int i = 0; i < wordList.size(); i++) {
-            equals = false;
-            for (int j = 0; j < depGraph.size(); j++) {
-                if (wordList.get(i).getId() == depGraph.get(j).getId()) {
-                    if (wordList.get(i).getHead() == depGraph.get(j).getHead()) {
-                        equals = true;
-                    }
-                    break;
-                }
-            }
-            if (equals == false) {
-                break;
-            }
-        }
-        wordList = temp;
-        return equals;
-    }
-
-    public List<String> getActionList() {
-        return transitionList;
-    }
-
-    public List<Features> getFeatureList() {
-        return featureList;
-    }
-
-    public List<Word> getQueue() {
-        return queue;
-    }
-
-    public Stack<Word> getStack() {
-        return stack;
-    }
-
-    public int parse() {
-        transitionList = new ArrayList<String>();
-        featureList = new ArrayList<Features>();
-
-        while (!queue.isEmpty()) {
-            featureList.add(extractFeatures());
-            String action = performAction();
-            transitionList.add(action);
-        }
-        emptyStack(transitionList, featureList);
-
-        boolean printCntOper = false;
-        if (printCntOper) {
-            System.out.println("#words: " + wordList.size() + " \tStack: " + stack.size() + "\tTransition count: " + transitionList.size());
-        }
-
-        // Final test to check if the hand-annotated graph and reference-parsed
-        // graph are equal.
-        // If they are different, this is probably due to nonprojective links
-        if (equalGraphs() == true) {
-            // Correct action sequence: 
-            // Hand-annotated graph and reference-parsed graph are equal.
-            return 0;
-        } else {
-            // Could not find the correct sequence!!!: 
-            // The graphs are not equal.
-            return -1;
-        }
-    }
-
-    private String performAction() {
-        if (oracleLeftArc()) {
-            String res= stack.peek().getDeprel();
-            doLeftArc();
-            return "la." + res;
-        } else if (oracleRightArc()) {
-            String res=  stack.peek().getDeprel();
-            doRightArc();
-            return "ra." + stack.peek().getDeprel();
-        } else if (oracleReduce()) {
-            doReduce();
-            return "re";
-        } else{
-            doShift();
-            return "sh";
-        }
-    }
-
-    public void printActions() {
-        for (int i = 0; i < wordList.size(); i++) {
-            System.out.print(wordList.get(i).getForm() + " ");
-        }
-        System.out.println();
-        for (int i = 0; i < transitionList.size(); i++) {
-            System.out.print(transitionList.get(i) + " ");
-        }
-        System.out.println();
-    }
-
-    // emptyStack should only leave the root in the stack if the graph is projective and well-formed
-    public int emptyStack(List<String> transitionList, List<Features> featureList) {
-        while (stack.size() > 1) {
-            featureList.add(extractFeatures());
-            if (canReduce()) {
-                doReduce();
-                transitionList.add("re");
-            } else {
-                return -1;
-            }
-        }
-        return 0;
-    }
 
     public static void main(String[] args) throws IOException {
         File trainingSet = new File(Constants.TRAINING_SET);
