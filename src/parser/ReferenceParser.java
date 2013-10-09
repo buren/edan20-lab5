@@ -119,15 +119,10 @@ public class ReferenceParser {
     /*
      * Get methods
      */
-
     public List<String> getActionList() { return transitionList; }
-
     public List<Features> getFeatureList() { return featureList; }
-
     public List<Word> getQueue() { return queue; }
-
     public Stack<Word> getStack() { return stack; }
-
 
     /*
      * Print
@@ -214,7 +209,6 @@ public class ReferenceParser {
         if (stack.empty()) {
             return false;
         }
-
         // Constraint: top of the stack has no head in the graph
         // This means that it is not already in the graph.
         // In reference parsing, this should always be satisfied
@@ -310,13 +304,7 @@ public class ReferenceParser {
         for (int i = 0; i < sentenceList.size(); i++) {
             int parseSuccess;
             refParser = new ReferenceParser(sentenceList.get(i));
-            // The parser returns 0 or -1
-            // indicating if the parse is successful or not
-            // Failed parses should be discarded.
             parseSuccess = refParser.parse();
-//            if (parseSuccess < 0) {
-//                System.err.println("Sentence parsing failed!\nParsed " + i + " of the total " + sentenceList.size() + " sentences");
-//            }
 //            refParser.printActions();
             if (parseSuccess != -1) {
                 featureList.addAll(refParser.getFeatureList());

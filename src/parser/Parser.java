@@ -28,10 +28,40 @@ public class Parser {
         String transition;
 
         while (!parserState.queue.isEmpty()) {
+            String performedTransition = null;
             transition = oracle.predict();
             // Executes the predicted transition. If not possible, then shift
-            //TODO: COMPLETE THE CODE HERE
+            if (transition.contains("la")) {
+                if (parserState.canLeftArc()){
+                    performedTransition = transition;
+                    parserState.doLeftArc(parserState.queue.get(0).getDeprel());
+                }else {
+                    performedTransition = "sh";
+                    parserState.doShift();
+                }
+            }else if (transition.contains("re")) {
+                if (parserState.canReduce()){
+                    performedTransition = transition;
+                    parserState.doReduce();
+                }else {
+                    performedTransition = "sh";
+                    parserState.doShift();
+                }
+            }else if (transition.contains("ra")) {
+                if (parserState.oracleRightArc()){
+                    performedTransition = transition;
+                    parserState.doRightArc(parserState.queue.get(0).getDeprel());
+                }else {
+                    performedTransition = "sh";
+                    parserState.doShift();
+                }
+            } else {
+                performedTransition = "sh";
+                parserState.doShift();
+            }
+            parserState.addTransition(performedTransition);
         }
+
 
         // We empty the stack. When words have no head, we set it to root
         while (parserState.stack.size() > 1) {
@@ -111,5 +141,6 @@ public class Parser {
             parsedList.add(graph);
         }
         testCorpus.saveFile(testSetParsed, parsedList);
+        System.exit(0);
     }
 }
